@@ -1,3 +1,11 @@
+// ------------------------------------------------------------------------------
+// Assignment 1
+// Written by: Jordan Takefman, 300171459
+// For CSI2372 Section B
+// Time needed to complete this assignment
+// List the resources used to complete this assignment
+// -----------------------------------------------------------------------------
+
 #include <iostream>
 #include <cmath>
 #include <string>
