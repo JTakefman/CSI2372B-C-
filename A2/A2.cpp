@@ -39,6 +39,10 @@ class Graph {
         }
         ~Graph() {
             cout << "Graph destructor called" << endl;
+            clear_arr();
+        }
+
+        void clear_arr() {
             for (int i = 0; i < current_size; i++) {
                 clear_node(i);
             }
@@ -47,6 +51,19 @@ class Graph {
             }
             delete[] arr;
         }
+
+        /*Graph operator++() {
+            Graph temp = *this;
+            Node** fin = new Node*[current_size+1]; 
+            for (int i = 0; i < current_size; i++) {
+                fin[i]=arr[i];
+            }
+            current_size++;
+            fin[current_size-1]=new Node(nullptr, nullptr, -1);
+            clear_arr();
+            arr = fin;
+            delete arr;
+        }*/
 
         void clear_node(int nd) {
             cout << "Clearing node " << nd << endl;
@@ -64,6 +81,22 @@ class Graph {
             }
             //Starting point for each node
             arr[nd] = new Node(nullptr, nullptr, -1);
+        }
+
+        int get_degree(int nd) {
+            if (nd < 0 || nd > current_size) {
+
+            }
+            Node * current = arr[nd];
+            int deg = 0;
+            if (current->val==-1) {
+                return deg;
+            }
+            while (current != nullptr) {
+                deg++;
+                current = current->next;
+            }
+            return deg;
         }
 
 
@@ -118,7 +151,14 @@ class Graph {
             cout << "About to start removal of edge:\t " << start <<", " << end << endl;
             while (current != nullptr) {
                 if (current->val == end) {
-                    if (current->next==nullptr) {
+                    cout << "Found edge" << endl;
+                    //Last element
+                    if (current->next==nullptr && current->prev==nullptr) {
+                        current->val=-1;
+                    }
+
+                    else if (current->next==nullptr) {
+                        cout << "At end of list" << endl;
                         Node * last = current->prev;
                         last->next = nullptr;
                         current->prev = nullptr;
@@ -126,6 +166,7 @@ class Graph {
                         delete current;
                     }
                     else if (current->prev == nullptr) {
+                        cout << "At start of list" << endl;
                         current->next->prev=nullptr;
                         arr[start]=current->next;
 
@@ -146,6 +187,7 @@ class Graph {
                 }
                 current = current->next;
             }
+
             cout << "Can't remove, edge does not exist between nodes: \t " << start <<", " << end  << endl;
 
         }
@@ -163,6 +205,7 @@ class Graph {
 
             //If at start of list just swap value of end for first connection
             if (current->val==-1) {
+                delete to_add;
                 current->val = end;
                 return;
             }
@@ -215,43 +258,28 @@ class Graph {
 
 int main() {
     Graph g = Graph();
-    g.add_edge(0, 2);
     g.add_edge(0, 1);
+    g.add_edge(0, 2);
     g.add_edge(0, 3);
     g.add_edge(0, 4);
-    g.add_edge(0, 4);
-    g.add_edge(0, 5);
-
+    g.add_edge(1, 4);
     g.add_edge(1, 3);
-    g.add_edge(1, 2);
-    g.add_edge(1, 0);
-    g.add_edge(1, 1);
-    g.add_edge(1, 0);
-
-    g.add_edge(2, 0);
-    g.add_edge(2, 2);
-    g.add_edge(2, 2);
-    g.add_edge(2, -5);
-    g.add_edge(-5, -5);
-
-    g.add_edge(3, 1);
-    g.add_edge(3, 0);
-    g.add_edge(3, 2);
-
+    g.add_edge(4, 3);
+    g.add_edge(4, 4);
+    g.add_edge(4, 1);
     g.print_graph();
-
-    g.edge_exist(0,4);
-    g.remove_edge(0,4);
-    g.edge_exist(0,4);
-    g.remove_edge(3,0);
-    g.edge_exist(3,0);
-    g.remove_edge(1,2);
-    g.remove_edge(1,2);
-    g.remove_edge(2,3);
-    g.remove_edge(1,1);
-
+    cout << "0 deg: \t" << g.get_degree(0) << endl;
+    cout << "1 deg: \t" << g.get_degree(1) << endl;
+    cout << "4 deg: \t" << g.get_degree(4) << endl;
+    g.remove_edge(0,1);
+    g.remove_edge(4,4);
+    g.remove_edge(1,4);
     g.print_graph();
-    g.clear_node(0);
+    g.remove_edge(1,3);
+    g.print_graph();
+    cout << "0 deg: \t" << g.get_degree(0) << endl;
+    cout << "1 deg: \t" << g.get_degree(1) << endl;
+    cout << "4 deg: \t" << g.get_degree(4) << endl;
     g.print_graph();
     return 0;
 }
