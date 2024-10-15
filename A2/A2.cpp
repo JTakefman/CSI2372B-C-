@@ -376,7 +376,56 @@ class Graph {
                 return  2;
             }
 
-            cout << "Neither strongly nor unilaterally connected, test for weakly" << endl;
+            Graph temp_g = *this;
+            //Since we need to test against an undirected graph we 
+            //can add an extra edge for every directed edge existing
+            cout << "THIS: is " << endl << *this;
+            cout << "Temp_g is " << endl << temp_g;
+            for (int i = 0; i < temp_g.current_size; i++) {
+                Node * temp = temp_g.arr[i];
+                while (temp!=nullptr) {
+                    //This works since add_edge checks for duplicatess
+                    temp_g.add_edge(temp->val, i);
+                    temp=temp->next;
+                }
+            }
+            //Now having constructed our underlying we test if all paths exist like in the above
+            cout << "Temp_g after addedge" << endl << temp_g;
+
+            bool connections_2[temp_g.current_size][temp_g.current_size];
+            for (int i = 0; i < temp_g.current_size; i++) {
+                for (int j = 0; j < temp_g.current_size; j++) {
+                    bool visisted[current_size] = {false};
+                    connections_2[i][j] = temp_g.path_exists(i,j,visisted);
+                }
+            }
+
+            cout << "Connections 2 " << endl;
+            for (int i = 0; i < current_size; i++) {
+                cout << i << ":\t";
+                for (int j = 0; j < current_size; j++) {
+                    cout << connections[i][j] << "\t"; 
+                }
+                cout << endl << endl;
+            }
+
+            bool weakly_connected=true;
+            for (int i = 0; i < temp_g.current_size; i++) {
+                for (int j = 0; j < temp_g.current_size; j++) {
+                    if (!connections_2[i][j]) {
+                        weakly_connected=false;
+                        break;
+                   }
+                }
+            }
+
+            if (weakly_connected) {
+                cout << "The graph is weakly connected" << endl;
+                return 1;
+            }
+
+
+            cout << "The Graph is not connected" << endl;
             return 0;
         }
 
@@ -511,24 +560,7 @@ int main() {
     g.add_edge(0, 2);
     g.add_edge(0, 3);
     g.add_edge(0, 4);
-    g.add_edge(0, 5);
-    g.add_edge(2,5);
-    g.add_edge(3,4);
-    g.add_edge(1, 4);
-    g.add_edge(1, 3);
-    g.add_edge(4, 3);
-    g.add_edge(4, 2);
-    g.add_edge(4, 4);
-    g.add_edge(4,0);
-    g.add_edge(4, 1);
-    //g.add_edge(5,2);
-    cout << g;
-    g.remove_edge(0,3);
-    g.remove_edge(0,1);
-    g.add_edge(0,0);
-    g.remove_edge(4,3);
-    cout << g;
-    g.remove_edge(0,2);
+    //g.add_edge(0, 5);
     cout << g;
     int x = g.connectivity_type();
     cout << endl << "Connection is " << x << endl;
@@ -546,26 +578,6 @@ int main() {
     cout << "BFS complete: ";
     for (int i = 0; i < ret2.size();i++) {
         cout << ret2[i] << ", ";
-    }
-    cout << endl << endl;
-    cout <<"testing graph print: " << g;
-    cout << "Testing graph copy" << endl << endl;
-    Graph g2(g);
-    cout << endl << "Initial g2" << g2;
-    cout << "G2 test with first increment ";
-    ++g2;
-    cout << g2;
-    cout << "G2 test with second increment ";
-    ++g2;
-    cout << g2;
-    cout << "G2 test postfix increement" << endl;
-    g2++;
-    cout << g2;
-    int initial = g2.get_current_size();
-    for (int i = 0; i < initial;i++) {
-        g2--;
-        cout <<"G2 decrement "<< i << endl;
-        cout << g2;
     }
     return 0;
 }
