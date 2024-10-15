@@ -439,6 +439,12 @@ class Graph {
             return os;
         }
 
+        Graph operator ++(int) {
+            Graph temp = *this;
+            ++(*this);
+            return temp;
+        }
+
         Graph & operator++() {
             Node ** new_arr = new Node*[current_size+1];
             //Clear all pointers to null
@@ -458,6 +464,12 @@ class Graph {
             arr = new_arr;
             
             return *this;
+        }
+
+        Graph operator --(int) {
+            Graph temp = *this;
+            --(*this);
+            return temp;
         }
 
         Graph & operator--() {
@@ -546,9 +558,12 @@ int main() {
     cout << "G2 test with second increment ";
     ++g2;
     cout << g2;
+    cout << "G2 test postfix increement" << endl;
+    g2++;
+    cout << g2;
     int initial = g2.get_current_size();
     for (int i = 0; i < initial;i++) {
-        --g2;
+        g2--;
         cout <<"G2 decrement "<< i << endl;
         cout << g2;
     }
