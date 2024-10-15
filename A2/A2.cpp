@@ -41,9 +41,9 @@ class Graph {
             }
         }
         //Added optional size paramter to make ++ overload easier
-        Graph(Graph& g, int in_size=6) {
-            current_size=in_size;
-            arr = new Node*[in_size];
+        Graph(Graph& g) {
+            current_size=g.current_size;
+            arr = new Node*[current_size];
             for (int i = 0; i < current_size; i++) {
                 arr[i] = nullptr;
             }
@@ -90,6 +90,7 @@ class Graph {
                 delete current;
                 current = after;
             }
+            arr[nd]=nullptr;
         }
 
         int get_degree(int nd) {
@@ -111,9 +112,13 @@ class Graph {
 
         string print_graph() const{
             string ret = "\n";
+            if (current_size == 0) {
+                return "GRAPH IS EMPTY ADD A NODE";
+            }
             for (int i = 0; i < current_size; i++) {
                 ret += to_string(i) +"=>";
                 Node * current = arr[i];
+                
 
                 if (current != nullptr) {
                     bool end = false;
@@ -198,7 +203,8 @@ class Graph {
             }
             Node * current = arr[start];
             if (current == nullptr) {
-
+                cout << "Can't remove edge, node is empty" << endl;
+                return;
             }
             while (current != nullptr) {
                 if (current->val == end) {
@@ -428,12 +434,64 @@ class Graph {
             }
         }
 
+        friend ostream& operator<<(ostream& os, const Graph& g) {
+            os << g.print_graph() << endl;
+            return os;
+        }
+
+        Graph & operator++() {
+            Node ** new_arr = new Node*[current_size+1];
+            //Clear all pointers to null
+            for (int i = 0; i < current_size+1; i++) {
+                new_arr[i]=nullptr;
+            }
+             //Copy over all pointers
+            for (int i = 0; i < current_size; i++) {
+                new_arr[i] = arr[i];
+            }
+            //Clear current arr;
+            for (int i = 0; i < current_size-1; i++) {
+                arr[i] = nullptr;
+            }
+            delete[] arr;
+            current_size++;
+            arr = new_arr;
+            
+            return *this;
+        }
+
+        Graph & operator--() {
+            if (current_size==0) {
+                cout << "Can't decrement further, 0 nodes";
+                return *this;
+            }
+            Node ** new_arr = new Node*[current_size-1];
+            //Clear all pointers to null
+            for (int i = 0; i < current_size-1; i++) {
+                new_arr[i]=nullptr;
+            }
+            //Clear the node that we will lose 
+            clear_node(current_size-1);
+            for (int i = 0; i < current_size;i++) {
+                remove_edge(i, current_size-1);
+            }
+             //Copy over all pointers
+            for (int i = 0; i < current_size-1; i++) {
+                new_arr[i] = arr[i];
+            }
+            //Clear current arr;
+            for (int i = 0; i < current_size; i++) {
+                arr[i] = nullptr;
+            }
+            delete[] arr;
+            current_size--;
+            arr = new_arr;
+            return *this;
+        }
+
 };
 
-ostream& operator<<(ostream& os, const Graph& g) {
-    os << g.print_graph() << endl;
-    return os;
-}
+
 int main() {
     cout << "Started" << endl;
     Graph g;
@@ -479,7 +537,20 @@ int main() {
     }
     cout << endl << endl;
     cout <<"testing graph print: " << g;
-    Graph g2(g, 8);
-    cout << "G2 test with extra nodes " << g2;
+    cout << "Testing graph copy" << endl << endl;
+    Graph g2(g);
+    cout << endl << "Initial g2" << g2;
+    cout << "G2 test with first increment ";
+    ++g2;
+    cout << g2;
+    cout << "G2 test with second increment ";
+    ++g2;
+    cout << g2;
+    int initial = g2.get_current_size();
+    for (int i = 0; i < initial;i++) {
+        --g2;
+        cout <<"G2 decrement "<< i << endl;
+        cout << g2;
+    }
     return 0;
 }
