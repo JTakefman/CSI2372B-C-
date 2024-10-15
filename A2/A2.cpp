@@ -1,3 +1,11 @@
+// ------------------------------------------------------------------------------
+// Assignment 1
+// Written by: Jordan Takefman, 300171459
+// For CSI2372 Section B
+// Time to complete: 5 hours approx
+// Resources: Standard C++ Documentation
+// -----------------------------------------------------------------------------
+
 #include <iostream>
 #include <deque>
 #include <vector>
@@ -40,15 +48,14 @@ class Graph {
                 arr[i] = nullptr;
             }
         }
-        //Added optional size paramter to make ++ overload easier
+
         Graph(Graph& g) {
             current_size=g.current_size;
             arr = new Node*[current_size];
             for (int i = 0; i < current_size; i++) {
                 arr[i] = nullptr;
             }
-            //Only bound to g.current size in case new nodes are to be added
-            cout << "Starting copies for copy constructor" << endl;
+            
             for (int i = 0; i < g.current_size; i++) {
                 Node * temp = g.arr[i];
 
@@ -60,7 +67,7 @@ class Graph {
             }
         }
         ~Graph() {
-            cout << "Graph destructor called" << endl;
+            //cout << "Graph destructor called" << endl;
             clear_arr();
         }
 
@@ -76,11 +83,11 @@ class Graph {
         }
 
         void clear_node(int nd) {
-            cout << "Clearing node " << nd << endl;
+            //cout << "Clearing node " << nd << endl;
             Node * current = arr[nd];
             //Skip assuming nothing to clear
             if (current == nullptr) {
-                cout << "Empty list nothing to clear for " << nd << endl;
+                //cout << "Empty list nothing to clear for " << nd << endl;
                 return;
             }
             while (current != nullptr) {
@@ -95,13 +102,11 @@ class Graph {
 
         int get_degree(int nd) {
             if (nd < 0 || nd > current_size) {
-
+                cout << "Invalid input: node does not exist can't return degree" << endl;
+                return -1;
             }
             Node * current = arr[nd];
             int deg = 0;
-            if (current->val==-1) {
-                return deg;
-            }
             while (current != nullptr) {
                 deg++;
                 current = current->next;
@@ -146,42 +151,42 @@ class Graph {
             visited[current] = true;
 
             if (current==goal) {
-                cout << "Start and goal are the same " << current << " -> " << goal << endl;
+                //cout << "Start and goal are the same " << current << " -> " << goal << endl;
                 return true;
             }
 
             if (arr[current] == nullptr) {
-                cout << "Node " << current << " is empty" << endl;
+                //cout << "Node " << current << " is empty" << endl;
                 return false;
             }            
 
             Node * temp = arr[current];
             while (temp != nullptr) {
                 if (temp->val == goal) {
-                    cout << "Found goal " << current << " -> " << goal << endl;
+                    //cout << "Found goal " << current << " -> " << goal << endl;
                     return true;
                 }
                 if (temp->val != current) {
                     bool temp_check;
                     if (!visited[temp->val]) {
-                        cout << "Moving from " << current << " -> " << temp->val << endl;
+                        //cout << "Moving from " << current << " -> " << temp->val << endl;
                         temp_check = path_exists(temp->val, goal, visited);
 
                     }
                     if (temp_check == true) {
-                        cout << "Path exists " << current << " -> " << temp->val << endl;
+                        //cout << "Path exists " << current << " -> " << temp->val << endl;
                         return true;
                     }
                 }
                 temp = temp->next;
             }
-            cout << "No path between " << current << " -> " << goal << endl;
+            //cout << "No path between " << current << " -> " << goal << endl;
             return false;
         }
 
         bool edge_exist(int start, int end) {
             if (start > current_size-1 || end > current_size-1 or start < 0 or end < 0) {
-                cout << "Invalid edge, exceeds bounds of array: \t" << end << endl;
+                cout << "Invalid edge: exceeds bounds of array: \t" << end << endl;
                 return false;
             }
             Node * current = arr[start];
@@ -198,25 +203,25 @@ class Graph {
 
         void remove_edge(int start, int end) {
             if (start > current_size-1 || end > current_size-1 or start < 0 or end < 0) {
-                cout << "Invalid edge, exceeds bounds of array: \t" << end << endl;
+                cout << "Invalid edge: exceeds bounds of array: \t" << end << endl;
                 return;
             }
             Node * current = arr[start];
             if (current == nullptr) {
-                cout << "Can't remove edge, node is empty" << endl;
+                //cout << "Can't remove edge, node is empty" << endl;
                 return;
             }
             while (current != nullptr) {
                 if (current->val == end) {
                     //Last element in list
                     if ( (current->next == nullptr) && (current->prev==nullptr) ) {
-                        cout << "First and only element so deleting edge: "<< start <<", " << end << " at end of list" << endl; ;
+                        //cout << "First and only element so deleting edge: "<< start <<", " << end << " at end of list" << endl; ;
                         arr[start]=nullptr;
                         delete current;
                     }
                     //Removing from end
                     else if (current->next==nullptr) {
-                        cout << "Removing: " << start <<", " << end << " at end of list" << endl;
+                        //cout << "Removing: " << start <<", " << end << " at end of list" << endl;
                         Node * last = current->prev;
                         last->next = nullptr;
     
@@ -226,7 +231,7 @@ class Graph {
                     }
                     //Removing from start
                     else if (current->prev == nullptr) {
-                        cout << "Removing: " << start <<", " << end << " at start of list" << endl;
+                        //cout << "Removing: " << start <<", " << end << " at start of list" << endl;
                         current->next->prev=nullptr;
                         arr[start]=current->next;
 
@@ -236,7 +241,7 @@ class Graph {
                     }
                     //Removing from middle
                     else {
-                        cout << "Removing " << start <<", " << end << " in middle of list" << endl;
+                        //cout << "Removing " << start <<", " << end << " in middle of list" << endl;
                         Node *last = current->prev;
                         Node *after = current->next;
                         last->next= after;
@@ -250,34 +255,31 @@ class Graph {
                 current = current->next;
             }
 
-            cout << "Can't remove, edge does not exist between nodes: \t " << start <<", " << end  << endl;
+            //cout << "Can't remove, edge does not exist between nodes: \t " << start <<", " << end  << endl;
 
         }
 
         void add_edge(int start, int end) {
             if (start > current_size-1 || end > current_size-1 or start < 0 or end < 0) {
-                cout << "Invalid edge, exceeds bounds of array: \t" << end << endl;
+                cout << "Invalid edge: exceeds bounds of array: \t" << end << endl;
                 return;
             }
-            //cout << "In add edge: \t" << start << ", " << end << endl;
+
             Node * current = arr[start];
             Node * to_add = new Node(nullptr, nullptr, end);
-            //cout << "Passed first add initilzation" << endl;
+
             bool middle = false;
             bool end_list = false;
 
             //If at start of list just swap value of end for first connection
-            //cout << "About to start ifs " << endl;
-            //cout << "Checking current nullptr   " << (current==nullptr) << endl;
-            //cout << current << endl;
             if (current==nullptr) {
-                cout << "First edge to add: \t" << start << ", " << end << endl;
+                //cout << "First edge to add: \t" << start << ", " << end << endl;
                 arr[start]=to_add;
                 return;
             }
             //Also check if an existing start point are you greater
             else if (end < current->val) {
-                cout << "Added new smallest first edge: \t"<< start << ", " << end << endl;
+                //cout << "Added new smallest first edge: \t"<< start << ", " << end << endl;
                 to_add->next=current;
                 current->prev=to_add;
                 arr[start]=to_add;
@@ -307,7 +309,7 @@ class Graph {
 
             }
             if (middle) {
-                cout << "Adding edge in middle: \t " << start << ", " << end << endl;
+                //cout << "Adding edge in middle: \t " << start << ", " << end << endl;
                 Node * last = current->prev;
                 //Middle points to front
                 to_add->next = current;
@@ -318,7 +320,7 @@ class Graph {
             }
             else {
                 //If not in middle add to end
-                cout << "Adding edge to end: \t" << start << ", " << end << endl;
+                //cout << "Adding edge to end: \t" << start << ", " << end << endl;
                 current->next = to_add;
                 to_add->prev=current;
                 to_add->next=nullptr;
@@ -328,6 +330,9 @@ class Graph {
 
         int connectivity_type() {
             //Check if all paths exist
+            if (current_size==0) {
+                return 0;
+            }
             bool connections[current_size][current_size];
             for (int i = 0; i < current_size; i++) {
                 for (int j = 0; j < current_size; j++) {
@@ -335,7 +340,7 @@ class Graph {
                     connections[i][j] = path_exists(i,j,visisted);
                 }
             }
-            cout << "\t";
+            /*cout << "Base Graph Connectivity" << endl << "\t";
             for (int i = 0; i < current_size; i++) {
                 cout << i << "\t";
             }
@@ -347,7 +352,8 @@ class Graph {
                     cout << connections[i][j] << "\t"; 
                 }
                 cout << endl << endl;
-            }
+            }*/
+
             bool strongly_connected = true;
             for (int i = 0; i < current_size; i++) {
                 for (int j = 0; j < current_size; j++) {
@@ -358,7 +364,7 @@ class Graph {
                 }
             }
             if (strongly_connected) {
-                cout << "All nodes have path between them, hense, strongly connected" << endl;
+                //cout << "All nodes have path between them, hense, strongly connected" << endl;
                 return 3;
             }
 
@@ -372,15 +378,14 @@ class Graph {
                 }
             }
             if (uni_connected) {
-                cout << "At least one path exists between all pairs, hense, unilaterally connected" << endl;
+                //cout << "At least one path exists between all pairs, hense, unilaterally connected" << endl;
                 return  2;
             }
 
             Graph temp_g = *this;
             //Since we need to test against an undirected graph we 
             //can add an extra edge for every directed edge existing
-            cout << "THIS: is " << endl << *this;
-            cout << "Temp_g is " << endl << temp_g;
+
             for (int i = 0; i < temp_g.current_size; i++) {
                 Node * temp = temp_g.arr[i];
                 while (temp!=nullptr) {
@@ -390,7 +395,6 @@ class Graph {
                 }
             }
             //Now having constructed our underlying we test if all paths exist like in the above
-            cout << "Temp_g after addedge" << endl << temp_g;
 
             bool connections_2[temp_g.current_size][temp_g.current_size];
             for (int i = 0; i < temp_g.current_size; i++) {
@@ -400,14 +404,14 @@ class Graph {
                 }
             }
 
-            cout << "Connections 2 " << endl;
+            /*cout << "Connections 2 " << endl;
             for (int i = 0; i < current_size; i++) {
                 cout << i << ":\t";
                 for (int j = 0; j < current_size; j++) {
                     cout << connections[i][j] << "\t"; 
                 }
                 cout << endl << endl;
-            }
+            }*/
 
             bool weakly_connected=true;
             for (int i = 0; i < temp_g.current_size; i++) {
@@ -420,22 +424,22 @@ class Graph {
             }
 
             if (weakly_connected) {
-                cout << "The graph is weakly connected" << endl;
+                //cout << "The graph is weakly connected" << endl;
                 return 1;
             }
 
 
-            cout << "The Graph is not connected" << endl;
+            //cout << "The Graph is not connected" << endl;
             return 0;
         }
 
-        void bfs(int current, bool* visited, vector<int> &order) {
+        void dfs(int current, bool* visited, vector<int> &order) {
             visited[current]=true;
             order.push_back(current);
             Node * temp = arr[current];
             while(temp!= nullptr) {
                 if (!visited[temp->val]) {
-                    bfs(temp->val, visited, order);
+                    dfs(temp->val, visited, order);
                 }
                 temp = temp->next;
             }
@@ -444,18 +448,22 @@ class Graph {
 
         //The instructionson brightspace indicated a list needed to be returned but didn't
         //specify what strucutre or container, so for the sake of ease I am using a vector.
-        vector<int> BFS(int start) {
+        vector<int> DFS(int start) {
             vector<int> order;
             if (start < 0 || start > current_size) {
                 cout << "Invalid start node, returning empty list";
                 return order;
             }
+            if (current_size==0) {
+                cout << "Graph is empty, returning empty list" << endl;
+                return order;
+            }
             bool visited[current_size] {false};
-            bfs(start, visited, order);
+            dfs(start, visited, order);
             return order;
         }
 
-        vector <int> DFS(int start) {
+        vector <int> BFS(int start) {
             vector<int> order;
             deque<int> queue;
             queue.push_back(start);
@@ -463,12 +471,16 @@ class Graph {
                 cout << "Invalid start node, returning empty list";
                 return order;
             }
+            if (current_size==0) {
+                cout << "Graph is empty, returning empty list" << endl;
+                return order;
+            }
             bool visited[current_size] {false};
-            dfs(visited, order, queue);
+            bfs(visited, order, queue);
             return order;
         }
 
-        void dfs(bool* visited, vector<int> &order, deque<int> queue) {
+        void bfs(bool* visited, vector<int> &order, deque<int> queue) {
             while(queue.size()!=0) {
                 if (!visited[queue.front()]) {
                     visited[queue.front()]=true;
@@ -552,32 +564,146 @@ class Graph {
 
 };
 
+void print_vec(vector<int> input) {
+    cout << "[";
+    for (int i = 0; i < input.size();i++) {
+        cout << input[i] << " ";
+    }
+    cout << "]";
+}
 
 int main() {
-    cout << "Started" << endl;
     Graph g;
-    g.add_edge(0, 1);
-    g.add_edge(0, 2);
-    g.add_edge(0, 3);
-    g.add_edge(0, 4);
-    //g.add_edge(0, 5);
     cout << g;
-    int x = g.connectivity_type();
-    cout << endl << "Connection is " << x << endl;
+    //Front insertion
+    g.add_edge(0,4);
+    //Front insertion
+    g.add_edge(0,1);
+    //Middle insertion
+    g.add_edge(0,3);
+    g.add_edge(0,5);
+    //Duplicate insertion
+    g.add_edge(0,5);
+    //Boundaries Exceeded
+    g.add_edge(0,6);
+    g.add_edge(0,-1);
+    //Edge to itself
+    g.add_edge(0,0);
+
     cout << g;
-    bool visisted[g.get_current_size()] = {false};
-    g.path_exists(3,0,visisted);
-    cout << endl << endl;
-    vector<int> ret = g.BFS(0);
-    cout << "DFS complete: ";
-    for (int i = 0; i < ret.size();i++) {
-        cout << ret[i] << ", ";
+    g.add_edge(2,3);
+    g.add_edge(2,1);
+    g.add_edge(2,0);
+    g.add_edge(4,1);
+    g.add_edge(1,2);
+    g.add_edge(2,5);
+    g.add_edge(3,4);
+    g.add_edge(3,2);
+    g.add_edge(3,0);
+    
+    cout << g;
+    //Middle remove
+    g.remove_edge(0,3);
+    //Duplicate remove
+    g.remove_edge(0,3);
+    //Back Remove
+    g.remove_edge(0,5);
+    //Front Remove
+    g.remove_edge(0,0);
+    cout << g;
+    //Check existence
+    cout << g.edge_exist(2,3);
+    //Self edge
+    cout << g.edge_exist(2,2);
+    //Invalid input
+    cout << g.edge_exist(2,19);
+    cout << g.edge_exist(-2,3);
+    cout << g.edge_exist(-2,-3);
+    cout << g.edge_exist(19,-3);
+    cout << g;
+
+    for (int i = 0; i < g.get_current_size(); i++) {
+        cout << "For node " << i << " degree is " << g.get_degree(i) << endl;
     }
-    cout << endl << endl;
-    vector<int> ret2 = g.DFS(0);
-    cout << "BFS complete: ";
-    for (int i = 0; i < ret2.size();i++) {
-        cout << ret2[i] << ", ";
+    //Copy constructor
+    Graph g2 = g;
+    //Increment five times
+    cout << "Adding 5 nodes" << endl;
+    for (int i = 0; i < 5; i++) {
+        ++g2;
     }
+    cout << g2;
+    //Decrement to show removing points
+    cout << "Removing 8 nodes" << endl;
+    for (int i = 0; i < 8; i++) {
+        --g2;
+    }
+    //Create 3rd weakly connected graph
+    //
+    Graph g3 = g2;
+    g3.remove_edge(1,2);
+    g3.remove_edge(0,1);
+    //Empty graph
+    Graph g4;
+    for (int i = 0; i < 6; i++) {
+        --g4;
+    } 
+    cout << "G:" << endl;
+    cout << g;
+    cout << "G2:" << endl;
+    cout << g2;
+    cout << "G3:" << endl;
+    cout << g3;
+    cout << "G4:" << endl;
+    cout << g4;
+
+    cout << "G Connectivity Type:"  << g.connectivity_type() << endl;
+    cout << "G2 Connectivity Type:" << g2.connectivity_type() << endl;
+    cout << "G3 Connectivity Type:" << g3.connectivity_type() << endl;
+    cout << "G4 Connectivity Type:" << g4.connectivity_type() << endl << endl;
+
+    //BFS
+    vector<int> g_bfs = g.BFS(0);
+    cout << "G BFS:";
+    print_vec(g_bfs);
+    cout << endl;
+
+    vector<int> g2_bfs = g2.BFS(0);
+    cout << "G2 BFS:";
+    print_vec(g2_bfs);
+    cout << endl;
+
+    vector<int> g3_bfs = g3.BFS(0);
+    cout << "G3 BFS:";
+    print_vec(g3_bfs);
+    cout << endl;
+
+    vector<int> g4_bfs = g4.BFS(0);
+    cout << "G4 BFS:";
+    print_vec(g4_bfs);
+    cout << endl;
+
+    //DFS
+    cout << endl << endl;
+    vector<int> g_dfs = g.DFS(0);
+    cout << "G DFS:";
+    print_vec(g_dfs);
+    cout << endl;
+
+    vector<int> g2_dfs = g2.DFS(0);
+    cout << "G2 DFS:";
+    print_vec(g2_dfs);
+    cout << endl;
+
+    vector<int> g3_dfs = g3.DFS(0);
+    cout << "G3 DFS:";
+    print_vec(g3_dfs);
+    cout << endl;
+
+    vector<int> g4_dfs = g4.DFS(0);
+    cout << "G4 DFS:";
+    print_vec(g4_dfs);
+    cout << endl;
+
     return 0;
 }
