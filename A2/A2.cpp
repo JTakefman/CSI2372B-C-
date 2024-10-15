@@ -1,6 +1,7 @@
 #include <iostream>
 #include <deque>
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -28,7 +29,6 @@ class Graph {
         Graph() {
             current_size=6;
             arr = new Node*[current_size];
-            cout << "Passed intialized graph" << endl;
             for (int i = 0; i < current_size; i++) {
                 arr[i] = nullptr;
             }
@@ -38,6 +38,25 @@ class Graph {
             arr = new Node*[current_size];
             for (int i = 0; i < current_size; i++) {
                 arr[i] = nullptr;
+            }
+        }
+        //Added optional size paramter to make ++ overload easier
+        Graph(Graph& g, int in_size=6) {
+            current_size=in_size;
+            arr = new Node*[in_size];
+            for (int i = 0; i < current_size; i++) {
+                arr[i] = nullptr;
+            }
+            //Only bound to g.current size in case new nodes are to be added
+            cout << "Starting copies for copy constructor" << endl;
+            for (int i = 0; i < g.current_size; i++) {
+                Node * temp = g.arr[i];
+
+                while (temp != nullptr) {
+                    int test = temp->val;
+                    add_edge(i, test);
+                    temp=temp->next;
+                }
             }
         }
         ~Graph() {
@@ -90,10 +109,10 @@ class Graph {
         }
 
 
-        void print_graph() {
-            cout << endl;
+        string print_graph() const{
+            string ret = "\n";
             for (int i = 0; i < current_size; i++) {
-                cout << i << "=>";
+                ret += to_string(i) +"=>";
                 Node * current = arr[i];
 
                 if (current != nullptr) {
@@ -101,21 +120,21 @@ class Graph {
                     while(!end) {
                         if (current->next==nullptr) {
                             if (current->val != -1) {
-                                cout << current->val;
+                                ret += to_string(current->val);
                             }
                             end = true;
                         }
                         else {
                             if (current->val != -1) {
-                                cout << current->val << ", ";
+                                ret += to_string(current->val) + ", ";
                             }
                             current = current->next;
                         }
                     }
                 }
-                cout << endl;
+                ret+="\n";
             }
-            cout << endl;
+            return ret;
         }
 
         bool path_exists(int current, int goal, bool *visited) {
@@ -411,9 +430,13 @@ class Graph {
 
 };
 
+ostream& operator<<(ostream& os, const Graph& g) {
+    os << g.print_graph() << endl;
+    return os;
+}
 int main() {
     cout << "Started" << endl;
-    Graph g = Graph();
+    Graph g;
     g.add_edge(0, 1);
     g.add_edge(0, 2);
     g.add_edge(0, 3);
@@ -429,17 +452,17 @@ int main() {
     g.add_edge(4,0);
     g.add_edge(4, 1);
     //g.add_edge(5,2);
-    g.print_graph();
+    cout << g;
     g.remove_edge(0,3);
     g.remove_edge(0,1);
     g.add_edge(0,0);
     g.remove_edge(4,3);
-    g.print_graph();
+    cout << g;
     g.remove_edge(0,2);
-    g.print_graph();
+    cout << g;
     int x = g.connectivity_type();
     cout << endl << "Connection is " << x << endl;
-    g.print_graph();
+    cout << g;
     bool visisted[g.get_current_size()] = {false};
     g.path_exists(3,0,visisted);
     cout << endl << endl;
@@ -455,5 +478,8 @@ int main() {
         cout << ret2[i] << ", ";
     }
     cout << endl << endl;
+    cout <<"testing graph print: " << g;
+    Graph g2(g, 8);
+    cout << "G2 test with extra nodes " << g2;
     return 0;
 }
