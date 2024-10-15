@@ -81,7 +81,7 @@ class Graph {
             }
             delete[] arr;
         }
-
+        //Cleans a given node, used in the destructor
         void clear_node(int nd) {
             //cout << "Clearing node " << nd << endl;
             Node * current = arr[nd];
@@ -211,9 +211,10 @@ class Graph {
                 //cout << "Can't remove edge, node is empty" << endl;
                 return;
             }
+            //If the first element is null, there are no elements to remove
             while (current != nullptr) {
                 if (current->val == end) {
-                    //Last element in list
+                    //Only element in the list
                     if ( (current->next == nullptr) && (current->prev==nullptr) ) {
                         //cout << "First and only element so deleting edge: "<< start <<", " << end << " at end of list" << endl; ;
                         arr[start]=nullptr;
@@ -285,9 +286,8 @@ class Graph {
                 arr[start]=to_add;
                 return;
             }
-
-
-            //cout << "About to enter loop" << endl;
+            //If not adding to front, search through existing adjacency list
+            //to find spot to insert
             while(!end_list and !middle) {
                 if (current->val > end) {
                     middle = true;
@@ -340,19 +340,6 @@ class Graph {
                     connections[i][j] = path_exists(i,j,visisted);
                 }
             }
-            /*cout << "Base Graph Connectivity" << endl << "\t";
-            for (int i = 0; i < current_size; i++) {
-                cout << i << "\t";
-            }
-            cout << endl;
-
-            for (int i = 0; i < current_size; i++) {
-                cout << i << ":\t";
-                for (int j = 0; j < current_size; j++) {
-                    cout << connections[i][j] << "\t"; 
-                }
-                cout << endl << endl;
-            }*/
 
             bool strongly_connected = true;
             for (int i = 0; i < current_size; i++) {
@@ -446,8 +433,11 @@ class Graph {
         }
 
 
-        //The instructionson brightspace indicated a list needed to be returned but didn't
+        //The instructions on brightspace indicated a list needed to be returned but didn't
         //specify what strucutre or container, so for the sake of ease I am using a vector.
+
+        //This function is a higher level wrapper for the real DFS so the user doesn't have
+        //to allocate a visited array every time they call it.
         vector<int> DFS(int start) {
             vector<int> order;
             if (start < 0 || start > current_size) {
@@ -462,7 +452,8 @@ class Graph {
             dfs(start, visited, order);
             return order;
         }
-
+        //This function is a higher level wrapper for the real BFS so the user doesn't have
+        //to allocate a visited array every time they call it.
         vector <int> BFS(int start) {
             vector<int> order;
             deque<int> queue;
@@ -575,6 +566,7 @@ void print_vec(vector<int> input) {
 int main() {
     Graph g;
     cout << g;
+    cout << "Now adding nodes" << endl;
     //Front insertion
     g.add_edge(0,4);
     //Front insertion
@@ -602,6 +594,7 @@ int main() {
     g.add_edge(3,0);
     
     cout << g;
+    cout << "Now removing nodes" << endl;
     //Middle remove
     g.remove_edge(0,3);
     //Duplicate remove
@@ -610,18 +603,37 @@ int main() {
     g.remove_edge(0,5);
     //Front Remove
     g.remove_edge(0,0);
+    //Only edge
+    g.remove_edge(4,1);
+    //Test edge case
+    g.remove_edge(4,1);
     cout << g;
     //Check existence
-    cout << g.edge_exist(2,3);
+    cout << "Checking existance" << endl;
+    cout << g.edge_exist(2,3) << endl;
     //Self edge
-    cout << g.edge_exist(2,2);
+    cout << g.edge_exist(2,2)<< endl;;
     //Invalid input
-    cout << g.edge_exist(2,19);
-    cout << g.edge_exist(-2,3);
-    cout << g.edge_exist(-2,-3);
-    cout << g.edge_exist(19,-3);
+    cout << g.edge_exist(2,19)<< endl;;
+    cout << g.edge_exist(-2,3)<< endl;;
+    cout << g.edge_exist(-2,-3)<< endl;;
+    cout << g.edge_exist(19,-3)<< endl;;
     cout << g;
 
+    cout << "Now checking paths" << endl;
+    int current_size = g.get_current_size();
+    bool visited[current_size]{false};
+
+    cout << "2 -> 3:\t" << g.path_exists(2,3,visited) << endl;
+    fill_n(visited, current_size, false);
+    cout << "3 -> 1:\t" << g.path_exists(3,1,visited) << endl;
+    fill_n(visited, current_size, false);
+    cout << "5 -> 0:\t" << g.path_exists(5,0,visited) << endl;
+    fill_n(visited, current_size, false);
+    cout << "1 -> 4:\t" << g.path_exists(1,4,visited) << endl;
+    fill_n(visited, current_size, false);
+
+    cout << endl << "Now checking degrees of nodes" << endl;
     for (int i = 0; i < g.get_current_size(); i++) {
         cout << "For node " << i << " degree is " << g.get_degree(i) << endl;
     }
