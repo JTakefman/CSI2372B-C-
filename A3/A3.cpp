@@ -14,26 +14,26 @@
 using namespace std;
 
 class Graph {
-    class Node {
-        public:
-            Node* next;
-            Node* prev;
-            int val;
-            Node() {
-                next=nullptr;
-                next=nullptr;
-                val=-1;
-            };
-            Node(Node* in_next, Node* in_prev, int in_val){
-                next= in_next;
-                prev = in_prev;
-                val=in_val;
-            }
-    };
+    protected:
+        class Node {
+            public:
+                Node* next;
+                Node* prev;
+                int val;
+                Node() {
+                    next=nullptr;
+                    next=nullptr;
+                    val=-1;
+                };
+                Node(Node* in_next, Node* in_prev, int in_val){
+                    next= in_next;
+                    prev = in_prev;
+                    val=in_val;
+                }
+        };
     //Changed to protected from private for the sake of ease in the base classes.
     //I don't see anything in the assignment instructions that says we can't do this so I'm assuming
     //it's valid.
-    protected:
         int current_size;
         Node **arr;
     public:
@@ -119,7 +119,7 @@ class Graph {
         }
 
 
-        string print_graph() const{
+        virtual string print_adj() const{
             string ret = "\n";
             if (current_size == 0) {
                 return "GRAPH IS EMPTY ADD A NODE";
@@ -416,7 +416,7 @@ class Graph {
         }
 
         friend ostream& operator<<(ostream& os, const Graph& g) {
-            os << g.print_graph() << endl;
+            os << g.print_adj() << endl;
             return os;
         }
 
@@ -492,13 +492,13 @@ class Forest : public Graph {
             cout << "I am a forest " << endl;
         }
 
-        void  add_edge(int start, int end) override {
+        void add_edge(int start, int end) override {
             if (start > current_size-1 || end > current_size-1 or start < 0 or end < 0) {
                 cout << "Invalid edge: exceeds bounds of array: \t" << end << endl;
                 return;
             }
-            bool visisted[current_size]{false};
-            if (path_exists(start, end, visisted)) {
+            bool visited[current_size]{false};
+            if (path_exists(start, end, visited)) {
                 cout << "Can't add edge, " << start << " : " << end << " will create cycle: " << start << " is connected to " << end << endl;
                 return;
             }
@@ -520,6 +520,121 @@ class Forest : public Graph {
             }
 
         }
+
+        using Graph::operator++;
+        using Graph::operator--;
+};
+
+class Tree : public Forest {
+
+    private:
+        /*For a tree, we obviously don't want the user adding extra edges as this will by defintion
+          create a cycle since every node has a path between them. Hence we make add_edge() private
+          in order to ensure the user can only add by adding a new vertex, connected to a given node
+          or by incrementing.
+
+          The same principle applies for remove_edge as if the user can remove a random edge, this will
+          prevent the graph from being connected.
+        */
+        int root_node = 0;
+        using Forest::add_edge;
+        using Forest::remove_edge;
+
+    public:
+        Tree(): Forest() {
+            cout << "I am a tree" << endl;
+        }
+
+        void add_vertex(int start) {
+            if (start > current_size-1 || start < 0) {
+                cout << "Invalid vertex: " << start << " exceeds bounds of array with max vertex: \t" << current_size-1 << endl;;
+                return;
+            }
+
+            //By default we only add nodes as leaves, so you only need to specify the start point
+            //thus, you simply need to increase the size of the graph then call add_edge
+            Graph::operator++();
+            Forest::add_edge(start, current_size-1);
+        }
+
+        void set_root(int root) {
+            if (root < 0 || root > current_size) {
+                cout << "Invalid root node" << endl;
+                return;
+            }
+            root_node=root;
+        }
+
+        
+
+        //add_vertex needs to increment the size of the 
+        Tree operator ++(int) {
+            Tree temp = *this;
+            add_vertex(current_size-1);
+            return temp;
+        }
+
+        Tree operator --(int) {
+            cout << "Entered decrement root node is " << root_node << endl;
+            cout << "Current size is " << current_size << endl;
+            if (current_size==1) {
+                cout << "Error: Cannot decrement tree further than one" << endl;
+                return *this;
+            }
+            //Edge case for removing the node set as root but not changing it.
+            //Default to 0
+            if (root_node >= current_size-1) {
+                cout << "Error: tried to decrement set root node, defaulting to 0" << endl;
+                root_node=0;
+                return *this;
+            }
+            Tree temp = *this;
+            //Since a leaft 
+            Graph::operator--();
+            return temp;
+        }
+
+        friend ostream& operator<<(ostream& os, const Tree& t) {
+            os << t.print_wrapper() << endl;
+            return os;
+        }
+
+        
+    private:
+        string print_wrapper() const {
+            cout << " about to print, root node is " << root_node << endl;
+            //Should never happen due to decrement convention preventing further than one.
+            if (current_size==0) {
+                cout << "Error, tree is empty" << endl;
+                return "";
+            }
+            bool visited[current_size]{false};
+            return print_graph(root_node, visited, 0);
+        }
+
+        string print_graph(int current, bool* visited, int level) const{
+            
+            visited[current] = true;
+            Node * temp = arr[current];
+            string ret = "";
+            if (current == root_node) {
+                ret+= to_string(current) + "\n";
+            }
+            //If no children print yourself
+            while(temp!= nullptr) {
+                if (!visited[temp->val]) {
+                    string front_space(3*level, ' ');
+                    ret += front_space + "---" + to_string(temp->val) + "\n"; 
+                    ret += print_graph(temp->val, visited, level+1);
+                }
+                temp = temp->next;
+            }
+            //All nodes under this were paths back to an existing explored node so we need to add
+
+            return ret;
+        }
+
+
 };
 
 void print_vec(vector<int> input) {
@@ -530,8 +645,7 @@ void print_vec(vector<int> input) {
     cout << "]";
 }
 
-int main() {
-    
+void run_forest() {
     Forest f;
     f++;
     f++;
@@ -560,5 +674,50 @@ int main() {
     f--;
     f--;
     cout << f;
+}
+
+int main() {
+    Tree t;
+    cout << "First add" << endl;
+    t.add_vertex(0);
+    cout << "First print " << t;
+    t.add_vertex(0);
+    cout << t;
+    cout << "Adding 3 nodes" << endl;
+    t.add_vertex(3);
+    t.add_vertex(1);
+    t.add_vertex(2);
+    cout << t;
+    t.set_root(0);
+    cout << t;
+    t.set_root(1);
+    cout << t;
+    t.set_root(2);
+    cout << t;
+    t.set_root(3);
+    cout << t;
+    t.set_root(4);
+    cout << t;
+    cout << "Now incrementing hte graph twice" << endl;
+    t++;
+    t++;
+    t.add_vertex(0);
+    t.add_vertex(0);
+    t.set_root(0);
+    cout << t;
+    cout << "prior to decrement loop" << endl;
+    cout << t;
+    cout << "Now starting decrement loop";
+    int s = t.get_current_size();
+    t.set_root(0);
+    cout << "initial state" << endl << t;
+    cout << "adjacency list: " << endl << t.print_adj();
+    t.set_root(5);
+    for (int i = 0; i < s; i++) {
+        cout << "i is " << i << " size is " << s;
+        cout << t;
+        t--;
+    }
+    cout << t;
     return 0;
 }
