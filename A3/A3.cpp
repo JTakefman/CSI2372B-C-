@@ -38,7 +38,6 @@ class Graph {
         Node **arr;
     public:
         Graph() {
-            cout << "I am a graph" << endl;
             current_size=6;
             arr = new Node*[current_size];
             for (int i = 0; i < current_size; i++) {
@@ -46,6 +45,7 @@ class Graph {
             }
         }
         Graph(int size) {
+            cout << "Constructing Graph" << endl;
             current_size=size;
             arr = new Node*[current_size];
             for (int i = 0; i < current_size; i++) {
@@ -173,7 +173,7 @@ class Graph {
                 if (temp->val != current) {
                     bool temp_check;
                     if (!visited[temp->val]) {
-                        //cout << "Moving from " << current << " -> " << temp->val << endl;
+                        //out << "Moving from " << current << " -> " << temp->val << endl;
                         temp_check = path_exists(temp->val, goal, visited);
 
                     }
@@ -489,7 +489,7 @@ class Forest : public Graph {
         //Call starting with one node
         
         Forest() : Graph(1) {
-            cout << "I am a forest " << endl;
+            cout << "Constructing Forest " << endl;
         }
 
         void add_edge(int start, int end) override {
@@ -529,7 +529,7 @@ class Tree : public Forest {
 
     private:
         /*For a tree, we obviously don't want the user adding extra edges as this will by defintion
-          create a cycle since every node has a path between them. Hence we make add_edge() private
+          create a cycle since the graph is already connected Hence we make add_edge() private
           in order to ensure the user can only add by adding a new vertex, connected to a given node
           or by incrementing.
 
@@ -542,7 +542,7 @@ class Tree : public Forest {
 
     public:
         Tree(): Forest() {
-            cout << "I am a tree" << endl;
+            cout << "Constructing Tree" << endl;
         }
 
         void add_vertex(int start) {
@@ -577,6 +577,8 @@ class Tree : public Forest {
         Tree operator --(int) {
             cout << "Entered decrement root node is " << root_node << endl;
             cout << "Current size is " << current_size << endl;
+            //I did this because an empty graph is technically vacuously connected and not considered a tree.
+            //So be convention I chose to keep the tree at size 1 at a minimum.
             if (current_size==1) {
                 cout << "Error: Cannot decrement tree further than one" << endl;
                 return *this;
@@ -602,7 +604,7 @@ class Tree : public Forest {
         
     private:
         string print_wrapper() const {
-            cout << " about to print, root node is " << root_node << endl;
+            //cout << " about to print, root node is " << root_node << endl;
             //Should never happen due to decrement convention preventing further than one.
             if (current_size==0) {
                 cout << "Error, tree is empty" << endl;
@@ -645,79 +647,158 @@ void print_vec(vector<int> input) {
     cout << "]";
 }
 
+
 void run_forest() {
+    cout << "\n\n********************\nSTART OF FOREST TEST\n********************\n\n\n";
     Forest f;
     f++;
     f++;
+    //Add a new edge between the vertices
     f.add_edge(0,1);
     cout << f;
+    //Edges will create a cycle, so blocked from adding
     f.add_edge(0,1);
     f.add_edge(1,0);
+    //Valid edge so it will add
     f.add_edge(2,0);
     cout << f;
+    //Again invalid
     f.add_edge(2,1);
     f.add_edge(1,2);
+    //Now removing edges
     f.remove_edge(2,0);
     cout << f;
+    //Invalid remove edge
     f.remove_edge(2,0);
+    //Now increment again
     f++;
     f++;
-    cout << f;
+    cout << "after incrementing twice " << f;
+    //Add new edges
     f.add_edge(3, 0);
     f.add_edge(3, 2);
+    cout << "Added edges 3-0 and 3-2" << f;
+    //No valid edges because of cycle except for 4,2
     f.add_edge(3, 1);
+    //Only valid edge, rest won't work
     f.add_edge(2, 4);
     f.add_edge(3, 4);
     f.add_edge(1, 2);
     f.add_edge(4, 3);
+    cout << "\n\nAfter adding 4-2 and attempted invalid edges" << endl;
     cout << f;
+    //
+    f.edge_exist(4,3);
+    f.edge_exist(1,0);
+    //All invalid
+    f.edge_exist(1,-1);
+    f.edge_exist(-1,4);
+    f.edge_exist(-1,90);
+    //Decrement twice
     f--;
     f--;
-    cout << f;
+    //Now is no longer connected. Expected and allowed since the forest only specifies no cycles not connectivity
+    cout << endl << "After decrementing twice" << f;
+
 }
 
-int main() {
+void run_tree() {
+    cout << "\n\n******************\nSTART OF TREE TEST\n******************\n\n\n";
     Tree t;
-    cout << "First add" << endl;
+    cout << "First adding new node with edge to 0" << endl;
     t.add_vertex(0);
-    cout << "First print " << t;
+    cout << "First print " << endl << t << endl;
+    cout << "Adding another node with edge to 0" << endl;
     t.add_vertex(0);
     cout << t;
     cout << "Adding 3 nodes" << endl;
-    t.add_vertex(3);
+    //Error check to show invalid addition
+    t.add_vertex(3); 
+    //Valid additions
     t.add_vertex(1);
     t.add_vertex(2);
-    cout << t;
+    //Now how adjacency list
+    cout << "adjacency list form:" << endl;
+    cout << t.print_adj();
+    cout << "Now showing dfs and bfs as well as print from each node as root" << endl;
+
     t.set_root(0);
     cout << t;
+    cout << "DFS:" << endl;
+    print_vec(t.DFS(0));
+    cout << endl << "BFS:" << endl;
+    print_vec(t.BFS(0));
+    cout << endl << endl;
+
     t.set_root(1);
     cout << t;
+    cout << "DFS:" << endl;
+    print_vec(t.DFS(1));
+    cout << endl << "BFS:" << endl;
+    print_vec(t.BFS(1));
+    cout << endl<< endl;
+
     t.set_root(2);
     cout << t;
+    cout << "DFS:" << endl;
+    print_vec(t.DFS(2));
+    cout << endl << "BFS:" << endl;
+    print_vec(t.BFS(2));
+    cout << endl << endl;
+    
     t.set_root(3);
     cout << t;
+    cout << "DFS:" << endl;
+    print_vec(t.DFS(3));
+    cout << endl << "BFS:" << endl;
+    print_vec(t.BFS(3));
+    cout << endl << endl;
+    
     t.set_root(4);
     cout << t;
+    cout << "DFS:" << endl;
+    print_vec(t.DFS(4));
+    cout << endl << "BFS:" << endl;
+    print_vec(t.BFS(4));
+    cout << endl << endl;
+    
     cout << "Now incrementing hte graph twice" << endl;
     t++;
     t++;
+    cout << endl << t << endl;
+    cout << "No add a 2 more nodes, connected to 0";
+    cout << endl;
+
     t.add_vertex(0);
     t.add_vertex(0);
     t.set_root(0);
     cout << t;
     cout << "prior to decrement loop" << endl;
     cout << t;
-    cout << "Now starting decrement loop";
+
+    //Erase all nodes
     int s = t.get_current_size();
     t.set_root(0);
-    cout << "initial state" << endl << t;
+    cout << "Now starting decrement loop with initial state" << endl;
+    cout << t << endl;
     cout << "adjacency list: " << endl << t.print_adj();
+    
+    //Done to demonstrate behaviour if removing a node that is set as root
+    cout << "Now resetting root to 5 for decrement loop" << endl;
     t.set_root(5);
     for (int i = 0; i < s; i++) {
-        cout << "i is " << i << " size is " << s;
+        cout << "i is " << i << " size is " << t.get_current_size() << endl;
         cout << t;
         t--;
     }
     cout << t;
+    //Trying to decremnt past one node
+    cout << "Now trying to decrement past -1" << endl;
+    t--;
+}
+
+int main() {
+    run_forest();
+    run_tree();
     return 0;
 }
