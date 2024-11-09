@@ -173,30 +173,81 @@ class Employee{
         fstream file;
 
     public:
-        void open(string f) {
-            if (!file.is_open()) {
-                file.open(f);
-            }
-            else {
-                cout << "Close currently open file";
-            }
-        }
 
-        void update_department(int id) {
+        void update_department(int id, string dept, string f_name) {
+            file.open(f_name, ios::in);
             if (id<0) {
                 cout << "Invalid input" << endl;
                 return;
             }
+            string temp;
+            string out_string = "";
             //Loop to correct position.
-            for (int i =0; i < id-1; i++) {
-                string temp = "";
+            for (int i =0; i < id-1; i++) { 
+
                 getline(file, temp);
+                out_string += temp + "\n";
             }
             string update;
             getline(file, update);
-            
+            cout << out_string;
+            cout <<"Found line: " << update << endl;
+
+            int pos = update.rfind(',');
+            int len = update.size();
+            update.erase(pos, len-pos);
+            update.append(", " + dept);
+            out_string+=update + "\n";
+
+            //Get rest of lines
+            while(getline(file, temp)) {
+                out_string+=temp + "\n";
+            }
+            //Write to file
+            //Reset pointer to front of file
+            file.seekp(0);
+            file.close();
+            //Reopen in writing mode
+            file.open(f_name, ios::out);
+            file << out_string;
+            file.close();
+        }
+
+        void remove_line(int id, string f_name) {
+            file.open(f_name, ios::in);
+            if (id<0) {
+                cout << "Invalid input" << endl;
+                return;
+            }
+            string out_string = "";
+            string temp;
+            //Loop to correct position.
+            for (int i =0; i < id-1; i++) { 
+                getline(file, temp);
+                out_string += temp + "\n";
+            }
+            //Skip the desired line
+            string skip;
+            getline(file, skip);
+            //Get remainder
+            while(getline(file, temp)) {
+                out_string+=temp + "\n";
+            }
+            //Write to file
+            //Reset pointer to front of file
+            file.seekp(0);
+            file.close();
+            //Reopen in writing mode
+            file.open(f_name, ios::out);
+            file << out_string;
+            file.close();
         }
     
+        void add_line(string new_line, string f_name) {
+            file.open(f_name, ios::app);
+            file << new_line;
+            file.close();
+        }
 };
 
 class Complex {
@@ -282,6 +333,12 @@ void run_Q2() {
     l << "ERROR: Stargin the application";
 }
 
+void run_Q3() {
+    Employee e;
+    e.update_department(3, "mechanical", "Q3.txt");
+    //e.remove_line(3, "Q3.txt");
+    e.add_line("6, test, electronics", "Q3.txt");
+}
 //I just chose to have the operations apply to the first term for hte sake of ease
 //so for testing, just swap out the operation and you'll see they match the test cases
 void run_Q4() {
@@ -295,6 +352,7 @@ void run_Q4() {
 int main() {
     run_Q1();
     run_Q2();
+    run_Q3();
     run_Q4();
     return 1;
 }
