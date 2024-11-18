@@ -287,6 +287,53 @@ class BigInteger {
             return out;
         }
 
+        BigInteger operator+(BigInteger & x) {
+            int sum = construct_b10() + x.construct_b10();
+            //cout << "Sum in addition is " << sum << endl;
+            return BigInteger(sum, base);
+        }
+
+        //Do we need to account for negatives?
+        //Appropriate way to account for 0 case
+        BigInteger operator-(BigInteger & x) {
+            int sum = construct_b10() - x.construct_b10();
+            //cout << "Sum in addition is " << sum << endl;
+            return BigInteger(sum, base);
+        }
+
+        //Do we need to account for negatives?
+        BigInteger operator*(BigInteger & x) {
+            int sum = construct_b10() * x.construct_b10();
+            //cout << "Sum in addition is " << sum << endl;
+            return BigInteger(sum, base);
+        }
+
+        //NEEDS TO BE INTEGER DIVISION so your good
+        BigInteger operator/(BigInteger & x) {
+            int sum = construct_b10() / x.construct_b10();
+            //cout << "Sum in addition is " << sum << endl;
+            return BigInteger(sum, base);
+        }  
+
+
+        //Still need to figure out
+        /*BigInteger& operator=(const BigInteger& other) {
+            delete[] digits;
+
+            size=other.size;
+            base = other.base;
+            digits = new int [size];
+
+        }
+
+        //Easier to just create a new object which will handle hte conversion to
+        //the given base via the constructor, then rewriting to update the current 
+        //object.
+        BigInteger &operator++() {
+            *this = BigInteger(construct_b10()+1, base);
+            return *this;
+        }*/
+
         
 
 };
@@ -333,10 +380,11 @@ int main() {
     i[3] = 10;
     cout << "Now i is " << i.ret_string() << endl;
 
-    BigInteger t1(400, 2);
+    BigInteger t1(405, 2);
     BigInteger t2(400, 15);
     BigInteger t3(30, 15);
 
+    //Testing boolean operations.
     cout << "t1 is " << t1 << " or " << to_string(t1.construct_b10()) << endl;
     cout << "t2 is " << t2 << " or " << to_string(t2.construct_b10()) << endl;
     cout << "t3 is " << t3 << " or " << to_string(t3.construct_b10()) << endl;
@@ -349,6 +397,22 @@ int main() {
 
     cout << "Testing t1 < t2 " <<  (t1<t2) << endl;
     cout << "Testing t1 < t3 " <<  (t1<t3) << endl;
+
+    //Testing arithmetic operations.
+    BigInteger a1 = t1 + t2;
+    cout << "a1 is " << a1 << " or " << to_string(a1.construct_b10()) << endl;
+    BigInteger a2 = t1 - t2;
+    cout << "a2 is " << a2 << " or " << to_string(a2.construct_b10()) << endl;
+    BigInteger a3 = t1 * t3;
+    cout << "a3 is " << a3 << " or " << to_string(a3.construct_b10()) << endl;
+    BigInteger a4 = t1 / t2;
+    cout << "a4 is " << a4 << " or " << to_string(a4.construct_b10()) << endl;
+
+    //Increment operators
+    cout << "testing incrment operator";
+    cout << "a1 is " << a1 << " or " << to_string(a1.construct_b10()) << endl;
+    //++a1;
+    //cout << "a1 is " << a1 << " or " << to_string(a1.construct_b10()) << endl;
 
     return 0;  
 }
