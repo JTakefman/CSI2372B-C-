@@ -65,7 +65,7 @@ class BigInteger {
             return log(val) / log(base);
         }
 
-        int construct_b10() {
+        int construct_b10() const {
             int final = 0;
             for (int i = size-1; i > -1; i--) {
                 //cout << "Next term is " << pow(base,i) << endl;
@@ -93,7 +93,7 @@ class BigInteger {
             cout << endl;
         }
 
-        string ret_string() {
+        string ret_string() const {
             string temp ="";
             for (int i = size-1; i > -1; i--) {
                 
@@ -106,6 +106,7 @@ class BigInteger {
                     temp+=to_string(digits[i]);
                 }
             }
+            temp+="_b"+to_string(base);
             return temp;
         }
 
@@ -242,7 +243,49 @@ class BigInteger {
         }
         
 
+        int& operator[](int index){
+            if (index >= size || index < 0) {
+                cout << "Array index out of bound, exiting";
+                exit(0);
+            }
+            return digits[index];
+        }
 
+        bool operator == (const BigInteger &other) {
+            //cout << "Comparing " << construct_b10() << " with " << other.construct_b10() << endl;
+            return (construct_b10() == other.construct_b10());
+        }
+
+        bool operator < (const BigInteger &other) {
+            //cout << "Comparing " << construct_b10() << " with " << other.construct_b10() << endl;
+            return (construct_b10() < other.construct_b10());
+        }
+
+        bool operator > (const BigInteger &other) {
+            //cout << "Comparing " << construct_b10() << " with " << other.construct_b10() << endl;
+            return (construct_b10() > other.construct_b10());
+        }
+
+        bool operator >= (const BigInteger &other) {
+            //cout << "Comparing " << construct_b10() << " with " << other.construct_b10() << endl;
+            return (construct_b10() >= other.construct_b10());
+        }
+
+        bool operator <= (const BigInteger &other) {
+            //cout << "Comparing " << construct_b10() << " with " << other.construct_b10() << endl;
+            return (construct_b10() <= other.construct_b10());
+        }
+
+        bool operator != (const BigInteger &other) {
+            //cout << "Comparing " << construct_b10() << " with " << other.construct_b10() << endl;
+            return (construct_b10() != other.construct_b10());
+        }
+
+        friend ostream & operator << (ostream &out, const BigInteger &c) {
+            string str = c.ret_string();
+            out << str;
+            return out;
+        }
 
         
 
@@ -279,9 +322,33 @@ int main() {
 
     //Insert at middle
     cout << "Now inserting digit at middle" << endl;
-    i.print_digits();
     i.insert_digit(3, 6);
     cout << "Now i is " << i.ret_string() << endl;
+
+    //[] operator
+
+    cout << "Now changing i[3] from " << i[3] << " to A " << endl;
+    i.print_digits();
+    //Since only the display uses the character, we still assign with the undelying umerical value
+    i[3] = 10;
+    cout << "Now i is " << i.ret_string() << endl;
+
+    BigInteger t1(400, 2);
+    BigInteger t2(400, 15);
+    BigInteger t3(30, 15);
+
+    cout << "t1 is " << t1 << " or " << to_string(t1.construct_b10()) << endl;
+    cout << "t2 is " << t2 << " or " << to_string(t2.construct_b10()) << endl;
+    cout << "t3 is " << t3 << " or " << to_string(t3.construct_b10()) << endl;
+
+    cout << "Testing t1 == t2 " <<  (t1==t2)<< endl;
+    cout << "Testing t1 == t3 " <<  (t1==t3) << endl;
+
+    cout << "Testing t1 != t2 " <<  (t1!=t2) << endl;
+    cout << "Testing t1 != t3 " <<  (t1!=t3) << endl;
+
+    cout << "Testing t1 < t2 " <<  (t1<t2) << endl;
+    cout << "Testing t1 < t3 " <<  (t1<t3) << endl;
 
     return 0;  
 }
