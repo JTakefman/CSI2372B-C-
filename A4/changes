@@ -1,0 +1,8 @@
+Changes still to make Nov 21 6:18PM:
+    Need to update num to match remove digit add digit operations.
+    Need to add >> operator
+    Need to fix ++ weirdness.
+    Need to add further edge case trapping
+    Need to add bigint support
+
+    Do I even need num, shouldn't I just store the array?

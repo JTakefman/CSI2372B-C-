@@ -81,12 +81,14 @@ class BigInteger {
             int final = 0;
             for (int i = size-1; i > -1; i--) {
                 //cout << "Next term is " << pow(base,i) << endl;
+                //cout << "digits[i] is " << digits[i] << " with i " << i << endl;
                 final+= digits[i]*pow(base, i);
                 //cout << "final is " << final << endl;
             }
-            cout << "Negative status currently is " << negative << endl;
+            //cout << "Negative status currently is " << negative << endl;
+            //cout << "Current constructed final is " << final << endl;
             if (negative==true) {
-                cout << "Constructing negative value " << endl;
+                //cout << "Constructing negative value " << endl;
                 return (0-final);
             }
             return final;
@@ -537,21 +539,23 @@ void edge_cases() {
     //Trying to incrase
     b2--;
     cout << "b2 is after 1 decremnts" << b2 << endl;
-    b2--;
-    cout << "b2 is after 2 decremnts" << b2 << endl;
-    b2--;
-    cout << "b2 is after 3 decremnts" << b2 << endl; 
-    b2--;
-    cout << "b2 is after 4 decremnts" << b2 << endl;
 
     cout << "Now b2 is " << b2 << endl;
-    cout << "B2 digits is " << b2.num_digits() << endl;
+    //cout << "B2 digits is " << b2.num_digits() << endl;
+    b2.print_digits();
     cout << "Now testing going up " << endl;
-    BigInteger b3(-2, 17);
+    BigInteger b3(-1, 17);
+    cout << "B3 at start is " << b3 << endl;
     b3++;
+    cout << "B3 inc is " << b3 << endl;
     b3++;
+    cout << "B3 inc is " << b3 << endl;
     b3++;
-    cout << "After 3 increments b3 is " << b3 << endl;
+    cout << "B3 inc is " << b3 << endl;
+    for (int i = 0 ; i < 17; i++) {
+        b3++;
+    }
+    cout << "After 3 increments b3 is " << b3 << "With num value " << b3.get_num() << endl;
 }
 
 
