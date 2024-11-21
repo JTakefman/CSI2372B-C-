@@ -20,7 +20,7 @@ class BigInteger {
         BigInteger(int _num, int _base) {
 
             if (_base > 36 ||_base <= 1) {
-                cout << "Invalid base provided: " << _base << "\t defaulting to 10 " << endl;
+                cout << "ERROR: Invalid base provided: " << _base << "\t defaulting to 10 " << endl;
                 _base = 10;
             }
 
@@ -32,6 +32,7 @@ class BigInteger {
             //Account for negatives
             num = abs(_num);
             //cout << "Num is " << num << endl;
+            //cout << "Neg is " << negative << endl;
             //Highest power to initalize digits length with
             //+1 to account for x^0
 
@@ -83,7 +84,9 @@ class BigInteger {
                 final+= digits[i]*pow(base, i);
                 //cout << "final is " << final << endl;
             }
+            cout << "Negative status currently is " << negative << endl;
             if (negative==true) {
+                cout << "Constructing negative value " << endl;
                 return (0-final);
             }
             return final;
@@ -155,7 +158,14 @@ class BigInteger {
         
 
         void add_digit(int new_digit) {
+
+            if (new_digit > (base-1) || new_digit < 0) {
+                cout << "ERROR: Trying to add an invalid digit: " << new_digit << " returning " << endl;
+                return;
+            }
+
             int temp[size];
+            
             for (int i = size-1; i > -1; i--) {
                 temp[i]=digits[i];
                 //cout << "Inserting " << temp[i] << " at " << i << endl;
@@ -182,8 +192,8 @@ class BigInteger {
         }
 
         void remove_digit() {
-            if (size==0) {
-                cout << "Invalid remove, can't go lower than 1 digit" << endl;
+            if (size==1) {
+                cout << "ERROR: Invalid remove_digit, can't go lower than 1 digit" << endl;
                 return;
             }
             int temp[size];
@@ -202,12 +212,16 @@ class BigInteger {
 
         void insert_digit(int index, int value) {
             if (index >= size || index < 0) {
-                cout << "Invalid index, exceeds bounds of array" << endl;
+                cout << "ERROR: Invalid index << " << index << " exceeds bounds of array" << endl;
                 return;
             }
             if (value < 0 || value > 36) {
-                cout << "Invalid value, exceeds representation max " << endl;
+                cout << "ERROR: Invalid value " << value << " exceeds representation max " << endl;
                 return;
+            }
+
+            if (value > base-1) {
+                cout << "ERROR: Invalid value" << value << " exceeds base max" << endl;
             }
 
             if (index == 0) {
@@ -259,11 +273,12 @@ class BigInteger {
             }
         }
         
-
+        //I'm not sure what the expectation is for the convention here
+        //so I'm just going 
         int& operator[](int index){
             if (index >= size || index < 0) {
-                cout << "Array index out of bound, exiting";
-                exit(0);
+                cout << "ERROR: Array index out of bound, exiting" << endl;
+                exit(1);
             }
             return digits[index];
         }
@@ -376,6 +391,7 @@ class BigInteger {
             base = other.base;
             num = other.num;
             digits = new int[size];
+            negative=other.negative;
 
             for (int i = 0; i < size; i++) {
                 digits[i]=other.digits[i];
@@ -399,7 +415,9 @@ class BigInteger {
         }
 
         BigInteger &operator--(int) {
+            //cout << "for -- value is currently " << construct_b10()-1 << endl;
             *this = BigInteger(construct_b10()-1, base);
+            //cout << "for -- value is after" << construct_b10() << endl;
             return *this;
         }
 
@@ -508,8 +526,32 @@ void standard_tests() {
 void edge_cases() {
     //Num is 0
     //Invalid values
-    BigInteger(0, 37);
-    BigInteger(pow(2,32), -1);
+    BigInteger b(53, 5);
+    cout << b << endl;
+    //Adding a digit that exceeds base-1
+    b.add_digit(7);
+    b.add_digit(0);
+    cout << "after 4 " << b << endl;
+    //Remove digit with size 1
+    BigInteger b2(0, 17);
+    //Trying to incrase
+    b2--;
+    cout << "b2 is after 1 decremnts" << b2 << endl;
+    b2--;
+    cout << "b2 is after 2 decremnts" << b2 << endl;
+    b2--;
+    cout << "b2 is after 3 decremnts" << b2 << endl; 
+    b2--;
+    cout << "b2 is after 4 decremnts" << b2 << endl;
+
+    cout << "Now b2 is " << b2 << endl;
+    cout << "B2 digits is " << b2.num_digits() << endl;
+    cout << "Now testing going up " << endl;
+    BigInteger b3(-2, 17);
+    b3++;
+    b3++;
+    b3++;
+    cout << "After 3 increments b3 is " << b3 << endl;
 }
 
 
