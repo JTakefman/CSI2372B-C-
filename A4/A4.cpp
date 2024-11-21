@@ -7,7 +7,6 @@ class BigInteger {
 
     private:
         int base = 0;
-        int num = 0;
         bool negative = false;
         int *digits;
         int size;
@@ -25,6 +24,7 @@ class BigInteger {
             }
 
             //cout << "Declaring " << _num << " in base " << _base << endl;
+            int num = 0;
             base = _base;
             if (_num<0) {
                 negative=true;
@@ -45,7 +45,7 @@ class BigInteger {
             size = _size;
             //cout << "size is " << size << endl;
             digits = new int[size]{0};
-            construct_digits();
+            construct_digits(num);
             //cout << "back to base 10: " << val << endl;
         }
 
@@ -53,13 +53,8 @@ class BigInteger {
             return base;
         }
 
-        int get_num() {
-            return num;
-        }
-
         BigInteger(const BigInteger& c) {
             base = c.base;
-            num = c.num;
             size = c.size; 
             digits = new int[size]{0};
             for (int i = 0; i < size; i++) {
@@ -132,7 +127,7 @@ class BigInteger {
             return temp;
         }
 
-        void construct_digits() {
+        void construct_digits(int num) {
             int next = num;
             for (int i = size-1; i > -1; i--) {
                 //cout << "In loop";
@@ -391,7 +386,6 @@ class BigInteger {
 
             size=other.size;
             base = other.base;
-            num = other.num;
             digits = new int[size];
             negative=other.negative;
 
@@ -436,7 +430,6 @@ class BigInteger {
 void standard_tests() {
     //BigInteger i2(92, 37);
     BigInteger i(4052, 29);
-    cout  << i.get_num() << "b" << i.get_base() << " is " << i.ret_string() << endl;
     i.print_digits();
     cout << "Size of i is " << i.num_digits() << endl;
 
@@ -509,12 +502,12 @@ void standard_tests() {
     cout << "testing incrment operator, " << "a1 is " << a1 << " or " << to_string(a1.construct_b10()) << endl;
     a1++;
     a1++;
-    cout << "a1 is " << a1 << " or " << to_string(a1.construct_b10()) << endl;
+    cout << "a1 is " << a1 << " or " << to_string(a1.construct_b10()) << " after incrementing twice" <<endl;
     a1--;
     a1--;
     a1--;
     a1--;
-    cout << "a1 is " << a1 << " or " << to_string(a1.construct_b10()) << endl;
+    cout << "a1 is " << a1 << " or " << to_string(a1.construct_b10()) << " after decrement 4 times" << endl;
 
     //Testing addition with other integers
 
@@ -552,15 +545,12 @@ void edge_cases() {
     cout << "B3 inc is " << b3 << endl;
     b3++;
     cout << "B3 inc is " << b3 << endl;
-    for (int i = 0 ; i < 17; i++) {
-        b3++;
-    }
-    cout << "After 3 increments b3 is " << b3 << "With num value " << b3.get_num() << endl;
+    cout << "After 3 increments b3 is " << b3 << " with b10 value " << b3.construct_b10() << endl;
 }
 
 
 int main() {
-    //standard_tests();
-    edge_cases();
+    standard_tests();
+    //edge_cases();
     return 0;  
 }
