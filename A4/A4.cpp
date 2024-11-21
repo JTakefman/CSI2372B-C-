@@ -8,6 +8,7 @@ class BigInteger {
     private:
         int base = 0;
         int num = 0;
+        bool negative = false;
         int *digits;
         int size;
 
@@ -18,18 +19,28 @@ class BigInteger {
 
         BigInteger(int _num, int _base) {
 
-            if (_base > 36 ||_base <= 0) {
-                cout << "Invalid base provided defaulting to 10 " << endl;
+            if (_base > 36 ||_base <= 1) {
+                cout << "Invalid base provided: " << _base << "\t defaulting to 10 " << endl;
                 _base = 10;
             }
 
             //cout << "Declaring " << _num << " in base " << _base << endl;
             base = _base;
-            num = _num;
+            if (_num<0) {
+                negative=true;
+            }
+            //Account for negatives
+            num = abs(_num);
+            //cout << "Num is " << num << endl;
             //Highest power to initalize digits length with
             //+1 to account for x^0
-            int _size = floor(log_n(_base, _num))+1;
-            //cout << endl << "Log_n" << endl << log_n(_base, _num) << endl;
+
+            //1 as default minimum size to store a given integer
+            int _size = 1;
+            if (num!=0) {
+                _size = floor(log_n(_base, num))+1;
+                //cout << endl << "Log_n: " << log_n(_base, _num) << endl;
+            }
             size = _size;
             //cout << "size is " << size << endl;
             digits = new int[size]{0};
@@ -72,6 +83,9 @@ class BigInteger {
                 final+= digits[i]*pow(base, i);
                 //cout << "final is " << final << endl;
             }
+            if (negative==true) {
+                return (0-final);
+            }
             return final;
         }
 
@@ -95,6 +109,9 @@ class BigInteger {
 
         string ret_string() const {
             string temp ="";
+            if (negative==true) {
+                temp+="-";
+            }
             for (int i = size-1; i > -1; i--) {
                 
                 if (digits[i] >= 10) {
@@ -396,7 +413,7 @@ class BigInteger {
 
 };
 
-int main() {
+void standard_tests() {
     //BigInteger i2(92, 37);
     BigInteger i(4052, 29);
     cout  << i.get_num() << "b" << i.get_base() << " is " << i.ret_string() << endl;
@@ -486,6 +503,18 @@ int main() {
     cout << "Testing a1  * 4:\t" << a1*4  << " or " << to_string((a1*4).construct_b10()) << endl;
     cout << "Testing a1 / 4:\t\t" << a1/4  << " or " << to_string((a1/4).construct_b10()) << endl;
 
+}
 
+void edge_cases() {
+    //Num is 0
+    //Invalid values
+    BigInteger(0, 37);
+    BigInteger(pow(2,32), -1);
+}
+
+
+int main() {
+    //standard_tests();
+    edge_cases();
     return 0;  
 }
