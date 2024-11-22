@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------------
-// Assignment 3
+// Assignment 4
 // Written by: Jordan Takefman, 300171459
 // For CSI2372 Section B
 // Time to complete:
@@ -62,6 +62,10 @@ class BigInteger {
             return base;
         }
 
+        int num_digits() {
+            return size;
+        }
+
         BigInteger(const BigInteger& c) {
             base = c.base;
             size = c.size; 
@@ -75,6 +79,7 @@ class BigInteger {
             delete[] digits;
         }
 
+        //
         long double log_n(long double base, long double val) {
             //cout << val << "   Log val: " << log(val) << endl;
             //cout << base << "  Log base: " << log(base) << endl;
@@ -157,44 +162,28 @@ class BigInteger {
         
         
         }
-
-        size_t num_digits() {
-            return size;
-        }
         
 
         void add_digit(int new_digit) {
-
+            //Check edge cases
             if (new_digit > (base-1) || new_digit < 0) {
                 cout << "ERROR: Trying to add an invalid digit: " << new_digit << " returning " << endl;
                 return;
             }
-
             int temp[size];
-            
+            //Copy over digits to temporary array
             for (int i = size-1; i > -1; i--) {
                 temp[i]=digits[i];
-                //cout << "Inserting " << temp[i] << " at " << i << endl;
             }
-            //Delete existing array
-            //print_digits();
-            //cout << "Prior to delete in add_digit" << endl;
-            //print_digits();
+            //Delete existing array and increase size
             delete[] digits;
-            
-            //cout << "Size prior is " << size << endl;
             size+=1;
-            //cout << endl << endl;
             digits = new long long int[size]{0};
-            //cout << "Size is " << size << endl;
-            //2 to account for increase
+
             for (int i = size-1; i > 0; i--) {
-                //cout << "Inserting " << temp[i-1] << " at " << i << endl;
                 digits[i]=temp[i-1];
             }
             digits[0] = new_digit;
-            //cout << "Following add digits showing new" << endl;
-            //print_digits();
         }
 
         void remove_digit() {
@@ -218,7 +207,7 @@ class BigInteger {
 
         void insert_digit(int index, int value) {
             if (index >= size || index < 0) {
-                cout << "ERROR: Invalid index << " << index << " exceeds bounds of array" << endl;
+                cout << "ERROR: Invalid index " << index << " exceeds bounds of array" << endl;
                 return;
             }
             if (value < 0 || value > 36) {
@@ -228,6 +217,7 @@ class BigInteger {
 
             if (value > base-1) {
                 cout << "ERROR: Invalid value" << value << " exceeds base max" << endl;
+                return;
             }
 
             if (index == 0) {
@@ -279,12 +269,16 @@ class BigInteger {
             }
         }
         
-        //I'm not sure what the expectation is for the convention here
-        //so I'm just going 
-        long long int& operator[](int index){
+        //Since we have the insert digit method for assigning at a given index, I'm assuming
+        //that this operator is meant to be read only hence returning just the value at 
+        //the provided indesx. Furthermore, the standard convention would be to throw an exception obviously 
+        //but since that isn't specified in the document, I'm assuming that we're ok to 
+        //just return a value an indicate an error.
+
+        long long int operator[](int index){
             if (index >= size || index < 0) {
                 cout << "ERROR: Array index out of bound, exiting" << endl;
-                exit(1);
+                return -1;
             }
             return digits[index];
         }
@@ -467,7 +461,8 @@ class BigInteger {
 
         BigInteger operator%(BigInteger & x) {
             long long int sum = construct_b10() % x.construct_b10();
-            //cout << "Sum in modulus is " << sum << endl;
+            cout << "vals are " << construct_b10() << " and " << x.construct_b10() << endl;
+            cout << "Sum in modulus is " << sum << endl;
             return BigInteger(sum, base);
         }
         BigInteger operator%(int x) {
@@ -525,138 +520,98 @@ class BigInteger {
 };
 
 void standard_tests() {
-    cout << "\n\n***********************\nSTART OF STANDARD TESTS\n******************\n\n\n";
-    //BigInteger i2(92, 37);
-    BigInteger i(4052, 29);
-    i.print_digits();
-    cout << "Size of i is " << i.num_digits() << endl;
-
-    //Add digit
-    cout << "Now adding 2 3's as extra digit" << endl;
-    i.add_digit(3);
-    i.add_digit(3);
-    cout << "Now i is " << i << endl;
-    
-    //Remove digit
-    cout << "Now removing 2 extra digit" << endl;
-    i.remove_digit();
-    i.remove_digit();
-    cout << "Now i is " << i << endl;
-
-    //Insert Digit
-    cout << "Now inserting digit at start" << endl;
-    i.insert_digit(0, 35);
-    cout << "Now i is " << i << endl;
-
-    //Insert at end
-    cout << "Now inserting digit at end" << endl;
-    i.insert_digit(i.num_digits()-1, 2);
-    cout << "Now i is " << i << endl;
-
-    //Insert at middle
-    cout << "Now inserting digit at middle" << endl;
-    i.insert_digit(3, 6);
-    cout << "Now i is " << i << endl;
-
-    //[] operator
-    i.print_digits();
-    cout << "Now changing i[3] from " << i[3] << " to A " << endl;
-    //Since only the display uses the character, we still assign with the undelying umerical value
-    i[3] = 10;
-    cout << "Now i is " << i << " in base 10 is " << i.construct_b10() <<endl;
-
-    BigInteger t1(405, 2);
-    BigInteger t2(400, 15);
-    BigInteger t3(30, 15);
-
-    //Testing boolean operations.
-    cout << "t1 is " << t1 << " or " << to_string(t1.construct_b10()) << endl;
-    cout << "t2 is " << t2 << " or " << to_string(t2.construct_b10()) << endl;
-    cout << "t3 is " << t3 << " or " << to_string(t3.construct_b10()) << endl;
-
-    cout << "Testing t1 == t2 " <<  (t1==t2)<< endl;
-    cout << "Testing t1 == t3 " <<  (t1==t3) << endl;
-
-    cout << "Testing t1 != t2 " <<  (t1!=t2) << endl;
-    cout << "Testing t1 != t3 " <<  (t1!=t3) << endl;
-
-    cout << "Testing t1 < t2 " <<  (t1<t2) << endl;
-    cout << "Testing t1 < t3 " <<  (t1<t3) << endl;
-
-    //Testing arithmetic operations.
-    BigInteger a1 = t1 + t2;
-    cout << "a1 is " << a1 << " or " << to_string(a1.construct_b10()) << endl;
-    BigInteger a2 = t1 - t2;
-    cout << "a2 is " << a2 << " or " << to_string(a2.construct_b10()) << endl;
-    BigInteger a3 = t1 * t3;
-    cout << "a3 is " << a3 << " or " << to_string(a3.construct_b10()) << endl;
-    BigInteger a4 = t2 / t3;
-    cout << "a4 is " << a4 << " or " << to_string(a4.construct_b10()) << endl;
-    BigInteger a5 = t1 % t3;
-    cout << "a5 is " << a5 << " or " << to_string(a5.construct_b10()) << endl;
-
-    //Increment operators
-    cout << "testing incrment operator, " << "a1 is " << a1 << " or " << to_string(a1.construct_b10()) << endl;
-    a1++;
-    a1++;
-    cout << "a1 is " << a1 << " or " << to_string(a1.construct_b10()) << " after incrementing twice" <<endl;
-    a1--;
-    a1--;
-    a1--;
-    a1--;
-    cout << "a1 is " << a1 << " or " << to_string(a1.construct_b10()) << " after decrement 4 times" << endl;
-
-    //Testing addition with other integers
-
-    cout << "Testing a1 + 23:\t" << a1+23  << " or " << to_string((a1+23).construct_b10()) << endl;
-    cout << "Testing a1 - 100:\t" << a1-100  << " or " << to_string((a1-100).construct_b10()) << endl;
-    cout << "Testing a1  * 4:\t" << a1*4  << " or " << to_string((a1*4).construct_b10()) << endl;
-    cout << "Testing a1 / 4:\t\t" << a1/4  << " or " << to_string((a1/4).construct_b10()) << endl;
-
-}
-
-void edge_cases() {
-    cout << "\n\n***********************\nSTART OF EDGE CASE TESTS\n******************\n\n\n";
-    /*//Num is 0
-    //Invalid values
-    BigInteger b(53, 5);
-    cout << b << endl;
-    //Adding a digit that exceeds base-1
-    b.add_digit(7);
+    cout << "***********************\nSTART OF STANDARD TESTS\n******************\n\n";
+    BigInteger b(52643, 16);
+    //Test copy constructor
+    BigInteger b1 = b;
+    //Demonstrate << opreator
+    cout << "b is " << b << " or " << b.construct_b10() << " in b10 " << endl;
+    cout << "b2 is " << b1<< endl << b1.construct_b10() << " in b10 " << endl;;
+    //Test num digits
+    cout << "num_digits in b is " << b.num_digits() << endl;
+    cout << "num_digits in b is " << b.num_digits() << endl << endl;
+    //Testing add digits
+    //Valid
+    cout << "Now testing add_digit(5/0/15)" << endl;
+    b.add_digit(5);
     b.add_digit(0);
-    cout << "after 4 " << b << endl;
-    //Remove digit with size 1
-    BigInteger b2(0, 17);
-    //Trying to incrase
-    b2--;
-    cout << "b2 is after 1 decremnts" << b2 << endl;
+    b.add_digit(15);
+    cout << "b is " << b << " or " << b.construct_b10() << " in b10 " << endl;
+    //Invalid
+    b.add_digit(200);
+    b.add_digit(16);
+    b.add_digit(-1);
+    cout << "b is " << b << " or " << b.construct_b10() << " in b10 " << endl << endl;
+    cout << "Now testing remove_digit() by clearing b" << endl;
+    int size = b.num_digits();
 
-    cout << "Now b2 is " << b2 << endl;
-    //cout << "B2 digits is " << b2.num_digits() << endl;
-    b2.print_digits();
-    cout << "Now testing going up " << endl;
-    BigInteger b3(-1, 17);
-    cout << "B3 at start is " << b3 << endl;
-    b3++;
-    cout << "B3 inc is " << b3 << endl;
-    b3++;
-    cout << "B3 inc is " << b3 << endl;
-    b3++;
-    cout << "B3 inc is " << b3 << endl;
-    cout << "After 3 increments b3 is " << b3 << " with b10 value " << b3.construct_b10() << endl;
-    */
-    cout << "Not testing >> overload" << endl;
-    BigInteger b3(-1, 17);
-    string temp = b3.ret_string();
-    cout << "B3 initially prior to z is \t" << temp << endl;
-    b3 >> "ZZZ_36";
-    temp = b3.ret_string();
-    cout << "B3 following reassignment is " << temp << " with b10 " << b3.construct_b10() << endl;
+    for (int i = 0; i < size; i++) {
+        cout << "On iteration " << i << " calling remove_digit on b" << endl;
+        b.remove_digit();
+        cout << "b is " << b << " or " << b.construct_b10() << " in b10 " << endl;
+    }
+    cout << endl << "Now testing insert_digit()" << endl;
+    //Invalid tests due to size
+    b.insert_digit(50, 5);
+    b.insert_digit(-1, 5);
+    b.insert_digit(1, 5);
+    cout << "b is " << b << " or " << b.construct_b10() << " in b10 " << endl;
+    //Now valid tests
+    b.insert_digit(0, 5);
+    cout << "b is " << b << " or " << b.construct_b10() << " in b10 " << endl;
+    //Exceeds base-1
+    b.insert_digit(1, 16);
+    //Back to valid
+    b.insert_digit(0, 13);
+    cout << "b is " << b << " or " << b.construct_b10() << " in b10 " << endl;
+    b.insert_digit(1, 10);
+    cout << "b is " << b << " or " << b.construct_b10() << " in b10 " << endl;
+    b.insert_digit(2, 3);
+    cout << "b is " << b << " or " << b.construct_b10() << " in b10 " << endl;
+    b.print_digits();
+    //Now testing indexing
+    cout << "b num digits is " << b.num_digits() << endl;
+    cout << "b[6]=" << b[6] << endl;
+    cout << "b[-1]=" << b[-1] << endl;
+    cout << "b[0]=" << b[0] << endl;
+    cout << "b[3]=" << b[3] << endl;
+    cout << "b[2]=" << b[2] << endl;
+    //Now testing the boolean operators
+    cout << endl << endl << " now testing equality operators " << endl;
+    BigInteger b2(365, 5);
+    BigInteger b3(492, 29);
+    cout << "b2: " << b2 << endl;
+    cout << "b3: " << b3 << endl << endl;;
+    cout << "b2==b3: " << (b2==b3) << endl;
+    cout << "b2<b3: " << (b2<b3) << endl; 
+    cout << "b2>b3: " << (b2>b3) << endl; 
+    cout << "b2>=b3: " << (b2>=b3) << endl; 
+    cout << "b2<=b3: " << (b2<=b3) << endl; 
+    cout << "b2!=b3: " << (b2!=b3) << endl << endl;
+
+    
+    cout << "b2 is " << b2 << " or " << b2.construct_b10() << " in b10 " << endl;
+    cout << "b3 is " << b3 << " or " << b3.construct_b10() << " in b10 " << endl;
+    cout << "Now testing assignment operator" << endl;
+    b2 = b3;
+    cout << "b2 is " << b2 << " or " << b2.construct_b10() << " in b10 " << endl;
+    cout << "b3 is " << b3 << " or " << b3.construct_b10() << " in b10 " << endl << endl;
+
+    cout << "Now testing arithmetic operators" << endl;
+    BigInteger b4(-129207, 32);
+    BigInteger b5(90583, 7);
+    cout << "b2 is " << b4 << " or " << b4.construct_b10() << " in b10 " << endl;
+    cout << "b3 is " << b5 << " or " << b5.construct_b10() << " in b10 " << endl;
+    cout << "b4+b5: " << (b4+b5) << " or " << (b4+b5).construct_b10() << " in b10 " << endl;
+    cout << "b4-b5: " << (b4-b5) << " or " << (b4-b5).construct_b10() << " in b10 " << endl;
+    cout << "b4*b5: " << (b4*b5) << " or " << (b4*b5).construct_b10() << " in b10 " << endl;
+    cout << "b4/b5: " << (b4/b5) << " or " << (b4/b5).construct_b10() << " in b10 " << endl;
+    BigInteger modulus = (b4%b5);
+    cout << "b4%b5: " << modulus << " or " << modulus.construct_b10() << " in b10 " << endl;
+
 }
-
 
 int main() {
     standard_tests();
-    edge_cases();
     return 0;  
 }
