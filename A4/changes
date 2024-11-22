@@ -1,8 +1,16 @@
 Changes still to make Nov 21 6:18PM:
     FINISHED: Need to update num to match remove digit add digit operations.
-    Need to add >> operator
-    Need to fix ++ weirdness.
-    Need to add further edge case trapping
-    Need to add bigint support
+    FINISHED: Need to add >> operator
+    FINISHED: Need to fix ++ weirdness.
+    FINISHED: Need to add further edge case trapping
+    FINISHED: Need to add bigint support
 
     FINISHED Do I even need num, shouldn't I just store the array?
+
+
+Changes still to make Nov 22nd 1:26 AM:
+
+    Do final code cleanup
+    Do standard checks and finalize main files.
+    Offer explanation for high numbers.
+    Double check against document.
