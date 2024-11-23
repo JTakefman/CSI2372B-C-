@@ -323,7 +323,7 @@ class BigInteger {
         //a number
         BigInteger& operator>>(const string input){
             if (input.size() < 3) {
-                cout << "ERROR: Invalid string input to >>, less than 3 characters" << endl;
+                cout << "ERROR: Invalid string input " << input << " to >>, less than 3 characters" << endl;
                 return *this;
             }
             string back= "";
@@ -474,6 +474,10 @@ class BigInteger {
 
         //Still need to figure out
         BigInteger& operator=(const BigInteger& other) {
+            //Edge case to prevent self assignment
+            if (&other == this) {
+                return *this;
+            }
             delete[] digits;
 
             size=other.size;
@@ -519,7 +523,7 @@ class BigInteger {
 
 };
 
-void standard_tests() {
+void tests() {
     cout << "***********************\nSTART OF STANDARD TESTS\n******************\n\n";
     BigInteger b(52643, 16);
     //Test copy constructor
@@ -592,10 +596,12 @@ void standard_tests() {
     
     cout << "b2 is " << b2 << " or " << b2.construct_b10() << " in b10 " << endl;
     cout << "b3 is " << b3 << " or " << b3.construct_b10() << " in b10 " << endl;
+    //Assignment operators
     cout << "Now testing assignment operator" << endl;
     b2 = b3;
     cout << "b2 is " << b2 << " or " << b2.construct_b10() << " in b10 " << endl;
     cout << "b3 is " << b3 << " or " << b3.construct_b10() << " in b10 " << endl << endl;
+
 
     cout << "Now testing arithmetic operators" << endl;
     BigInteger b4(-129207, 32);
@@ -609,9 +615,40 @@ void standard_tests() {
     BigInteger modulus = (b4%b5);
     cout << "b4%b5: " << modulus << " or " << modulus.construct_b10() << " in b10 " << endl;
 
+    cout << "Now demoing the increment and decrement operators as well as the >> operator" << endl;
+
+    BigInteger b6(15, 4);
+    cout << "b6 is " << b6 << " or " << b6.construct_b10() << " in b10 " << endl;
+    cout << "Now decrementing 150 times" << endl;
+    for (int i = 0; i < 150; i++) {
+        b6--;
+    }
+    cout << "b6 is " << b6 << " or " << b6.construct_b10() << " in b10 " << endl;
+    cout << "Now increment 5036 times" << endl;
+    for (int i = 0; i < 5036; i++) {
+        b6++;
+    }
+    cout << "b6 is " << b6 << " or " << b6.construct_b10() << " in b10 " << endl << endl;
+
+    cout << "Now testing reading with >> operators" << endl;
+    b6 >> "-1_15";
+    cout << "b6 is " << b6 << " or " << b6.construct_b10() << " in b10 " << endl;
+    //Invalid tests
+    b6 >> "";
+    b6 >> "AC11111_10";
+    b6 >> "AC11111_99";
+    b6 >> "-ZZZZZZZZ_36";
+    cout << "b6 is " << b6 << " or " << b6.construct_b10() << " in b10 " << endl;
+    
+    //Final edge case tests
+    BigInteger b7(123, 9);
+    cout << "b7 is " << b7 << endl;
+    //Self assignment
+    b7 = b7;
+    cout << "b7 is " << b7 << endl;
 }
 
 int main() {
-    standard_tests();
+    tests();
     return 0;  
 }
